@@ -1,0 +1,736 @@
+{
+  "name": "Daily News",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "71c99b19-a93d-48bc-b591-1dea30f01a9e",
+      "name": "Trigger at 8am daily",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        688,
+        -128
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "url": "https://gnews.io/api/v4/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json.output.q }}"
+            },
+            {
+              "name": "lang",
+              "value": "en"
+            },
+            {
+              "name": "apikey",
+              "value": "c0fe55ddcfc487155d39bfce87cfe0fc"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c65dd2c6-df37-419d-ab37-43a3419bdc5c",
+      "name": "Fetch GNews articles",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1024,
+        224
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "url": "https://newsapi.org/v2/everything",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json.output.q }}"
+            },
+            {
+              "name": "language",
+              "value": "en"
+            },
+            {
+              "name": "sortBy",
+              "value": "publishedAt"
+            },
+            {
+              "name": "pageSize",
+              "value": "20"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Key",
+              "value": "48fa18f6183f46488f3017b784014ee3"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1731b2e-6c8f-4767-9ccd-721ab253e5ac",
+      "name": "Fetch NewsAPI articles",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1024,
+        432
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "articles",
+              "type": "string",
+              "value": "={{ $json.articles }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4073b264-2144-4677-b4ea-b74ccd1448bb",
+      "name": "GNews: Map to articles",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1248,
+        224
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "articles",
+              "type": "string",
+              "value": "={{ $json.articles }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "82274c3f-e34b-4bea-b525-8bba84ff4368",
+      "name": "NewsAPI: Map to articles",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1248,
+        432
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2064,
+        512
+      ],
+      "id": "d139e38b-d816-4e42-adf3-65ef15b7e914",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "2d6QVrPy9Xfr9Y1M",
+          "name": "whydoni gemini api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an news assistant. Your tasks:\n1. Select the 7 most relevant articles about {{ $('Information Extractor').item.json.output.q }} from {{ $json.articles }} and combine it to one output.\n2. Make sure to include the article URL for each item.\n3. Begin output with today's date (e.g., 'Good Morning, Today is {{ $now.format('yyyy/MM/dd') }}, Here is the latest news about {{ $('Information Extractor').item.json.output.q }} ：')\n4. Give proper numbering in each news, and adjust the output to markdown format.\nOutput only the summary.",
+        "options": {}
+      },
+      "id": "9b06b4d8-bc78-421a-9357-ac848fdfb598",
+      "name": "AI summarizer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        2064,
+        320
+      ],
+      "typeVersion": 1.8
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.body.message }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "q",
+              "description": "search query for user to be passed to search news"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        320
+      ],
+      "id": "99d9ee5b-ba1f-498e-8e13-2bfc7ad191f0",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        496,
+        528
+      ],
+      "id": "6e0b336f-6076-411d-b792-018963b57b09",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "2d6QVrPy9Xfr9Y1M",
+          "name": "whydoni gemini api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://gnews.io/api/v4/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "=AI"
+            },
+            {
+              "name": "lang",
+              "value": "en"
+            },
+            {
+              "name": "apikey",
+              "value": "c0fe55ddcfc487155d39bfce87cfe0fc"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "603a4335-2c82-4320-b583-08f7f6ae8e83",
+      "name": "Fetch GNews articles1",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1008,
+        -240
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "url": "https://newsapi.org/v2/everything",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "=AI"
+            },
+            {
+              "name": "language",
+              "value": "en"
+            },
+            {
+              "name": "sortBy",
+              "value": "publishedAt"
+            },
+            {
+              "name": "pageSize",
+              "value": "20"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Key",
+              "value": "48fa18f6183f46488f3017b784014ee3"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "92ec0260-1c79-4e7b-a995-776500dbb351",
+      "name": "Fetch NewsAPI articles1",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1008,
+        -32
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "articles",
+              "type": "string",
+              "value": "={{ $json.articles }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "597ad737-7af9-4fd4-878b-065ef6e8794e",
+      "name": "GNews: Map to articles1",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1232,
+        -240
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "articles",
+              "type": "string",
+              "value": "={{ $json.articles }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e9c1880d-e554-449d-9e1b-5d224bd2c201",
+      "name": "NewsAPI: Map to articles1",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1232,
+        -32
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "chatId": "5596109034",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "bbbfbbbe-e212-4e8c-a9ad-7ef53c61af94",
+      "name": "Send summary to Telegram1",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        2384,
+        -144
+      ],
+      "webhookId": "21eb8e1c-87de-45af-888d-699fbd443bc8",
+      "typeVersion": 1.2,
+      "credentials": {
+        "telegramApi": {
+          "id": "hf6hxDhQGSuGOWY5",
+          "name": "workflowparty bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1984,
+        48
+      ],
+      "id": "ac33610f-7902-4346-8869-52668cc3baba",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "2d6QVrPy9Xfr9Y1M",
+          "name": "whydoni gemini api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI news assistant. Your tasks:\n1. Select the 7 most relevant articles on AI technology progress and applications from {{ $json.articles }}.\n2. Make sure to include the article URL for each item.\n3. Begin output with today's date (e.g., 'Good Morning, Today is {{ $now.format('yyyy/MM/dd') }}, Here is the latest news about AI：').\n4. Give proper numbering in each news, and make the output in markdown format.\nOutput only the summary.",
+        "options": {}
+      },
+      "id": "a47ad707-9c03-4fbd-a202-8edf8f0aa330",
+      "name": "AI summarizer1",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1984,
+        -144
+      ],
+      "typeVersion": 1.8
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "news",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        320,
+        320
+      ],
+      "id": "53b1f8d2-16dc-4879-88af-4d63dc578a3f",
+      "name": "Webhook",
+      "webhookId": "d4ce2364-f30d-4449-910b-c43ab009d778"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2432,
+        320
+      ],
+      "id": "004f8388-6cab-4eed-8b9e-0aeb27cd348f",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1600,
+        320
+      ],
+      "id": "82fe38ff-6c2c-4c6d-ab54-79164844b22f",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "articles"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1808,
+        320
+      ],
+      "id": "c0b8aa23-8567-4695-90c0-2c847b6ed078",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1520,
+        -144
+      ],
+      "id": "2b6fb3eb-c12a-4d4a-b75d-9b7a2c6f551a",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "articles"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1728,
+        -144
+      ],
+      "id": "9d9d0a80-83d7-4e9c-8807-03e99d5d2f28",
+      "name": "Aggregate1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Fetch GNews articles": {
+      "main": [
+        [
+          {
+            "node": "GNews: Map to articles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger at 8am daily": {
+      "main": [
+        [
+          {
+            "node": "Fetch GNews articles1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch NewsAPI articles1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch NewsAPI articles": {
+      "main": [
+        [
+          {
+            "node": "NewsAPI: Map to articles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GNews: Map to articles": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NewsAPI: Map to articles": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI summarizer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI summarizer": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Fetch GNews articles",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch NewsAPI articles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch GNews articles1": {
+      "main": [
+        [
+          {
+            "node": "GNews: Map to articles1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch NewsAPI articles1": {
+      "main": [
+        [
+          {
+            "node": "NewsAPI: Map to articles1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GNews: Map to articles1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NewsAPI: Map to articles1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI summarizer1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI summarizer1": {
+      "main": [
+        [
+          {
+            "node": "Send summary to Telegram1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "AI summarizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "AI summarizer1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Jakarta",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "393ec383-0666-4d3a-926b-b6ed28b3c50a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4f85453a6a069f7829efddbad8817afb1185c1bc005622e45984ab8609ceafdb"
+  },
+  "id": "wg9pxbyD697gHm8k",
+  "tags": []
+}
