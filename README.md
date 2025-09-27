@@ -65,7 +65,13 @@ Masing-masing hasil dipetakan ke field `articles` agar konsisten.
 ---
 
 ## 📌 Contoh Output
+### From Webhook
+<img width="1016" height="849" alt="image" src="https://github.com/user-attachments/assets/6886c7c0-548f-4b89-a4e1-3c518283a08f" />
 
+### From Telegram
+<img width="741" height="1069" alt="image" src="https://github.com/user-attachments/assets/ac4c7601-e63a-447a-80b1-0570e40c9509" />
+
+### Full Output Example
 Good Morning, Today is 2025/09/27, Here is the latest news about AI：
 
 1.  Intel India Advocates for AI-Enabled Education and Policy Support
