@@ -4,6 +4,8 @@
 Workflow ini dibuat untuk **mengambil berita harian**, **meringkasnya dengan AI**, dan **mengirimkan hasilnya ke Telegram** maupun melalui **Webhook**. Workflow ini berjalan otomatis setiap hari pukul **08:00 WIB**, serta bisa dipanggil secara manual melalui **Webhook**.
 
 ---
+<img width="2299" height="1179" alt="image" src="https://github.com/user-attachments/assets/34e11e75-13fa-4f3d-9239-a023adc1efa1" />
+
 
 ## ⚙️ Cara Kerja Workflow
 
