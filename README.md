@@ -104,10 +104,10 @@ Good Morning, Today is 2025/09/27, Here is the latest news about AI：
 
 ### 2. Set Credentials
 Tambahkan kredensial berikut di n8n:
-- **GNews API** → masukkan API key.  
-- **NewsAPI** → masukkan API key.  
-- **Telegram API** → masukkan bot token.  
-- **Google Gemini API (Palm API)** → masukkan API key.
+- **GNews API** → masukkan API key ke dalam Query Auth dengan name apikey dan value berupa API Key.  
+- **NewsAPI** → masukkan API key ke dalam Header Auth dengan name X-Api-Key dan value berupa API Key.  
+- **Telegram API** → masukkan bot token API Key ke dalam credentials telegram.  
+- **Google Gemini API (Palm API)** → masukkan API key ke dalam credentials Google Gemini.
 
 ### 3. Aktifkan Workflow
 - Pastikan workflow dalam keadaan **Active**.  
