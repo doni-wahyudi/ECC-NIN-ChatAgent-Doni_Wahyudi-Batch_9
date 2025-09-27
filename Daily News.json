@@ -23,6 +23,8 @@
     {
       "parameters": {
         "url": "https://gnews.io/api/v4/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -33,10 +35,6 @@
             {
               "name": "lang",
               "value": "en"
-            },
-            {
-              "name": "apikey",
-              "value": "c0fe55ddcfc487155d39bfce87cfe0fc"
             }
           ]
         },
@@ -49,11 +47,23 @@
         1024,
         224
       ],
-      "typeVersion": 4.2
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "xNSsJoxvlbEjHOsA",
+          "name": "SectorsApp"
+        },
+        "httpQueryAuth": {
+          "id": "9MpuCCeAWKafmPcu",
+          "name": "Query Auth Gnews"
+        }
+      }
     },
     {
       "parameters": {
         "url": "https://newsapi.org/v2/everything",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -76,14 +86,6 @@
           ]
         },
         "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "X-Api-Key",
-              "value": "48fa18f6183f46488f3017b784014ee3"
-            }
-          ]
-        },
         "options": {}
       },
       "id": "a1731b2e-6c8f-4767-9ccd-721ab253e5ac",
@@ -93,7 +95,17 @@
         1024,
         432
       ],
-      "typeVersion": 4.2
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "9MpuCCeAWKafmPcu",
+          "name": "Query Auth Gnews"
+        },
+        "httpHeaderAuth": {
+          "id": "XGJcmma1I2FOAes9",
+          "name": "Header Auth NewsAPI"
+        }
+      }
     },
     {
       "parameters": {
@@ -726,7 +738,7 @@
     "timezone": "Asia/Jakarta",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "393ec383-0666-4d3a-926b-b6ed28b3c50a",
+  "versionId": "90578b65-ad68-4056-a074-f665d8756a5e",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "4f85453a6a069f7829efddbad8817afb1185c1bc005622e45984ab8609ceafdb"
