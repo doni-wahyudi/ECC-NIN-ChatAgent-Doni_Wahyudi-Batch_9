@@ -122,7 +122,9 @@ Tambahkan kredensial berikut di n8n:
 - Workflow akan otomatis berjalan setiap hari pukul **08:00 WIB**.
 
 ### 4. Gunakan Webhook (opsional, manual run)
-- Endpoint: POST http://<your-n8n-domain>/webhook/news
+- Edit html di notepad atau notepad++
+- Cari variabel WEBHOOK_URL, kemudian replace dengan webhook url dari n8n
+- Jangan lupa untuk menyimpan (Ctrl+S) html nya agar perubahannya terupdate
 
 ### 5. Cek Telegram
 - Ringkasan harian otomatis dikirimkan ke akun Telegram yang sudah dikonfigurasi.
